@@ -1,0 +1,88 @@
+%div(ra-controller="notes")
+  .row
+    .span10
+      %h1
+        Notes
+    .span2
+      %button(class="btn btn-primary" ng-click="showNew = true")
+        new note
+
+  %div(ng-show="showNew")
+    %br
+    %table.table
+      %tr
+        %td
+          %form.form-horizontal
+            .control-group
+              %label.control-label(for="name")
+                Name
+              .controls
+                %input#name(type="text" placeholder="Name" ng-model="raNew.name")
+            .control-group
+              %label.control-label(for="content")
+                Content
+              .controls
+                %textarea#content(placeholder="Content" ng-model="raNew.content")
+            .control-group
+              %label.control-label(for="user")
+                User
+              .controls
+                %input#user(type="text" placeholder="User" ng-model="raNew.user")
+            .control-group
+              .controls
+                %button.btn.btn-danger(ng-click="showNew = false")
+                  cancel
+                %button.btn.btn-success(ng-click="raCreate(); showNew = false")
+                  save
+  %hr
+  %table.table.table-striped
+    %thead
+      %tr
+        %th(width="5%")
+        %th Name
+        %th User
+        %th(width="10%")
+          Actions
+    %tbody(ng-repeat="note in raIndex")
+      %tr(ng-hide="showEdit && raId == note._id")
+        %td(ng-click = "raClearId()")
+          %span(ng-show="raId && raId == note._id")
+            X
+        %td(ng-click = "showEdit=false; raSetId(note._id)")
+          {{note.name}}
+        %td 
+          {{note.user}}
+        %td
+          %button(class='btn btn-mini' ng-click="raSetId(note._id); showEdit = true")
+            edit
+          %button(class='btn btn-mini btn-danger' ng-click="raDelete(note._id)")
+            delete
+      %tr(ng-show="raId && raId == note._id && !showEdit")
+        %td
+        %td(colspan = "3")
+          {{raShow.content}}
+      %tr(ng-show="showEdit && raId == note._id")
+        %td(colspan="4")
+          %form.form-horizontal
+            .control-group
+              %label.control-label(for="name")
+                Name
+              .controls
+                %input#name(type="text" placeholder="Name" ng-model="raEdit.name" value="{{raEdit.name}}")
+            .control-group
+              %label.control-label(for="content")
+                Content
+              .controls
+                %textarea#content(placeholder="Content" ng-model="raEdit.content")
+            .control-group
+              %label.control-label(for="user")
+                User
+              .controls
+                %input#user(type="text" placeholder="User" ng-model="raEdit.user" value="{{raEdit.user}}")
+            .control-group
+              .controls
+                %button.btn.btn-danger(ng-click="showEdit = false; raClearId()")
+                  cancel
+                %button.btn.btn-success(ng-click="raUpdate(); showNew = false")
+                  save
+

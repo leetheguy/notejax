@@ -26,7 +26,7 @@ rangular.factory "railsResource", ["$resource", ($resource) ->
   $resource("/:controller/:id/:verb", {id: '@id'}, railsRoutesSet)
 ]
 
-rangular.directive 'raController', (railsResource) ->
+rangular.directive 'raController', ["railsResource", (railsResource) ->
   (scope, element, attrs) ->
     scope.raController = attrs.raController
     scope.raId = null
@@ -69,4 +69,5 @@ rangular.directive 'raController', (railsResource) ->
 
     raIndex()
     raNew()
+]
 

@@ -1,9 +1,10 @@
 %div(ra-controller="notes")
   .row
-    .span10
+    .span8
       %h1
         Notes
-    .span2
+    .span4
+      %input(type="text" ng-model="search")
       %button(class="btn btn-primary" ng-click="showNew = true")
         new note
 
@@ -43,7 +44,7 @@
         %th User
         %th(width="10%")
           Actions
-    %tbody(ng-repeat="note in raIndex")
+    %tbody(ng-repeat="note in raIndex | filter:search")
       %tr(ng-hide="showEdit && raId == note._id")
         %td(ng-click = "raClearId()")
           %span(ng-show="raId && raId == note._id")

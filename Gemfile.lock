@@ -80,7 +80,6 @@ GEM
     moped (1.5.0)
     multi_json (1.7.8)
     origin (1.1.0)
-    pg (0.15.1)
     polyglot (0.3.3)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
@@ -153,7 +152,6 @@ DEPENDENCIES
   haml-rails
   jquery-rails
   mongoid (~> 3.0.0)
-  pg
   pry-rails
   rails (= 3.2.3)
   sass-rails (~> 3.2.3)

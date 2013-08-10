@@ -3,6 +3,7 @@ class NotesController < ApplicationController
 
   def page
     @notes = Note.all
+    render :page
   end
 
   def index

@@ -41,4 +41,3 @@ gem 'jquery-rails'
 gem "mongoid", "~> 3.0.0"
 gem 'pry-rails'
 gem 'thin'
-gem 'pg'

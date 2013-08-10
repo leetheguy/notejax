@@ -47,18 +47,21 @@ rangular.directive 'raController', ["railsResource", (railsResource) ->
       scope.raNew = railsResource.new(controller: scope.raController)
 
     scope.raCreate = ->
-      scope.raNew.$create(controller: scope.raController)
-      raIndex()
-      raNew()
+      scope.raNew.$create(controller: scope.raController, ->
+        raIndex()
+        raNew()
+      )
 
     scope.raUpdate = ->
-      scope.raEdit.$update(id: scope.raId, controller: scope.raController)
-      scope.raClearId()
-      raIndex()
+      scope.raEdit.$update(id: scope.raId, controller: scope.raController, ->
+        scope.raClearId()
+        raIndex()
+      )
 
     scope.raDelete = (id) ->
-      railsResource.delete(controller: scope.raController, id: id)
-      raIndex()
+      railsResource.delete(controller: scope.raController, id: id, ->
+        raIndex()
+      )
 
     scope.raClearId = ->
       scope.raId = null

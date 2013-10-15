@@ -16,5 +16,6 @@
 //= require angular.min
 //= require angular-resource
 // require angle-up
-//= require_tree ./angular
-//= require_tree .
+// require_tree ./angular
+// notejax
+// rangular

@@ -3,7 +3,13 @@
 <head>
   <title>Notejax</title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
-  <%= javascript_include_tag "application" %>
+  <%-# javascript_include_tag "application" %>
+  <%= javascript_include_tag "jquery" %>
+  <%= javascript_include_tag "jquery_ujs" %>
+  <%= javascript_include_tag "angular.min" %>
+  <%= javascript_include_tag "angular-resource" %>
+  <%= javascript_include_tag "rangular" %>
+  <%= javascript_include_tag "notejax" %>
   <%= csrf_meta_tags %>
 </head>
 <body ng-app="Notejax">

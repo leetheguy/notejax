@@ -1,8 +1,8 @@
 Notejax::Application.routes.draw do
   resources :notes
 
-  get 'notes_page',    to: 'notes#page'
-  root :to => 'notes#index'
+  get 'notes_page', to: 'notes#page'
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

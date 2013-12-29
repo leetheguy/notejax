@@ -1,32 +1,42 @@
 class NotesController < ApplicationController
-  respond_to :json, except: :page
+  respond_to :json, except: :index
 
-  def page
-    @notes = Note.all
-  end
+  #TODO make sure delays are in place
+  def delay_1() sleep(0) end
+  def delay_2() sleep(0) end
 
   def index
     @notes = Note.all
-    render json: @notes
+    respond_to do |format|
+      format.html
+      format.json do
+        delay_1
+        render json: @notes
+      end
+    end
   end
 
   def show
     @note = Note.find(params[:id])
+    delay_2
     render json: @note
   end
 
   def new
     @note = Note.new
+    delay_2
     render json: @note
   end
 
   def edit
     @note = Note.find(params[:id])
+    delay_2
     render json: @note
   end
 
   def create
     @note = Note.new(params[:note])
+    delay_2
     if @note.save
       render json: @note, status: :created, location: @note
     else
@@ -36,6 +46,7 @@ class NotesController < ApplicationController
 
   def update
     @note = Note.find(params[:id])
+    delay_2
     if @note.update_attributes(params[:note])
       head :no_content
     else
@@ -46,6 +57,7 @@ class NotesController < ApplicationController
   def destroy
     @note = Note.find(params[:id])
     @note.destroy
+    delay_2
     head :no_content
   end
 end

@@ -1,27 +1,146 @@
-- model_class = Note.new.class
-.page-header
-  %h1=t '.title', :default => model_class.model_name.human.pluralize
-%table.table.table-striped
-  %thead
-    %tr
-      %th= model_class.human_attribute_name(:id)
-      %th= model_class.human_attribute_name(:_type)
-      %th= model_class.human_attribute_name(:_id)
-      %th= model_class.human_attribute_name(:name)
-      %th= model_class.human_attribute_name(:content)
-      %th= model_class.human_attribute_name(:user)
-      %th=t '.actions', :default => t("helpers.actions")
-  %tbody
-    - @notes.each do |note|
-      %tr
-        %td= link_to note.id, note_path(note)
-        %td= note._type
-        %td= note._id
-        %td= note.name
-        %td= note.content
-        %td= note.user
-        %td
-          = link_to t('.edit', :default => t("helpers.links.edit")), edit_note_path(note), :class => 'btn btn-mini'
-          = link_to t('.destroy', :default => t("helpers.links.destroy")), note_path(note), :method => :delete, :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')), :class => 'btn btn-mini btn-danger'
+%div(ra-controller="notes")
+  .loading.pagination-centered(ng-show="notes.indexLoading")
+    %br
+    %br
+    %br
+    %h3 Loading Notes
+    %br
+    %br
+    %img(src="/assets/loading_2.gif")
+  .showing(ng-hide="notes.indexLoading")
+    .row
+      .span7
+        %h1
+          Notes
+      .span5
+        %input(type="text" ng-model="search" placeholder="search")
+        %button(class="btn btn-primary" ng-click="showNew = true")
+          new note
+        %button(class="btn btn-primary" ng-hide="showRaw" ng-click="showRaw = true")
+          show raw JSON
+        %button(class="btn btn-primary" ng-show="showRaw" ng-click="showRaw = false")
+          hide raw JSON
 
-= link_to t('.new', :default => t("helpers.links.new")), new_note_path, :class => 'btn btn-primary'
+    / note raw JSON
+    .raw.alert.alert-info(ng-show="showRaw")
+      {{ notes }}
+
+    / note new view: loading
+    .pagination-centered(ng-show="showNew && (notes.newLoading || notes.createLoading)")
+      %h3 Loading / Creating New Note
+      %img(src="/assets/loading_1.gif" width="80" height="80")
+    / note new view
+    %div(ng-show="showNew && !notes.newLoading && !notes.createLoading")
+      %br
+      %table.table
+        / note new view: error
+        %tr(ng-show="notes.createError")
+          %td
+            .alert.alert-danger
+              %ul(ng-repeat="(field, errors) in notes.createError")
+                %li(ng-repeat="error in errors")
+                  {{ field }} {{ error }}
+        / note new view: form
+        %tr
+          %td(colspan = "2")
+            %form.form-horizontal
+              .control-group
+                %label.control-label(for="name")
+                  Name
+                .controls
+                  %input#name(type="text" placeholder="Name" ng-model="notes.new.name")
+              .control-group
+                %label.control-label(for="content")
+                  Content
+                .controls
+                  %textarea#content(placeholder="Content" ng-model="notes.new.content")
+              .control-group
+                %label.control-label(for="user")
+                  User
+                .controls
+                  %input#user(type="text" placeholder="User" ng-model="notes.new.user")
+              .control-group
+                .controls
+                  %button.btn.btn-danger(ng-click="showNew = false")
+                    cancel
+                  %button.btn.btn-success(ng-click="notes.callCreate()")
+                    save
+    %hr
+    %table.table.table-striped
+      %thead
+        %tr
+          %th(width="5%")
+          %th Name
+          %th User
+          %th(width="10%")
+            Actions
+      %tbody(ng-repeat="note in notes.index | filter:search")
+        / note index view
+        %tr(ng-hide="showEdit && notes.id == note._id")
+          %td(ng-click = "notes.clearId()")
+            %span(class='btn btn-mini btn-primary' ng-show="notes.id && notes.id == note._id")
+              &#215;
+          %td(ng-click = "showEdit=false; notes.setId(note._id)")
+            %u
+              {{note.name}}
+          %td 
+            {{note.user}}
+          %td(width="20%")
+            %button(class='btn btn-mini btn-primary' ng-click="showEdit=false; notes.setId(note._id)")
+              show content
+            %button(class='btn btn-mini btn-primary' ng-click="notes.setId(note._id); showEdit = true")
+              edit
+            %button(class='btn btn-mini btn-danger' ng-click="notes.callDelete(note._id)")
+              delete
+
+        / note show view: loading
+        %tr(ng-show="notes.id && notes.id == note._id && !showEdit && notes.showLoading")
+          %td(colspan="4")
+            .pagination-centered
+              %h3 Loading Note
+              %img(src="/assets/loading_1.gif" width="80" height="80")
+        / note show view
+        %tr(ng-show="notes.id && notes.id == note._id && !showEdit")
+          %td
+          %td(colspan = "3")
+            {{notes.show.content}}
+
+        / note edit view: error
+        %tr(ng-show="showEdit && notes.id == note._id && notes.updateError")
+          %td(colspan="4")
+            .alert.alert-danger
+              %ul(ng-repeat="(field, errors) in notes.updateError")
+                %li(ng-repeat="error in errors")
+                  {{ field }} {{ error }}
+        / note edit view: loading
+        %tr(ng-show="showEdit && notes.id == note._id && notes.editLoading")
+          %td(colspan="4")
+            .pagination-centered
+              %h3 Loading / Saving Note
+              %img(src="/assets/loading_1.gif" width="80" height="80")
+        / note edit view
+        %tr(ng-show="showEdit && notes.id == note._id && !notes.editLoading")
+          %td(colspan="4")
+            %form.form-horizontal
+              .control-group
+                %label.control-label(for="name")
+                  Name
+                .controls
+                  %input#name(type="text" placeholder="Name" ng-model="notes.edit.name" value="{{notes.edit.name}}")
+              .control-group
+                %label.control-label(for="content")
+                  Content
+                .controls
+                  %textarea#content(placeholder="Content" ng-model="notes.edit.content")
+              .control-group
+                %label.control-label(for="user")
+                  User
+                .controls
+                  %input#user(type="text" placeholder="User" ng-model="notes.edit.user" value="{{notes.edit.user}}")
+              .control-group
+                .controls
+                  %button.btn.btn-danger(ng-click="showEdit = false; notes.clearId()")
+                    cancel
+                  %button.btn.btn-success(ng-click="notes.callUpdate()")
+                    save
+

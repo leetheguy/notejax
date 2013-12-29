@@ -1,1 +1,1 @@
-notejax = angular.module("Notejax", ['rangular', 'ngResource'])
+angular.module("Notejax", ['rangular'])

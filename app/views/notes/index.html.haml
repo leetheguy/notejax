@@ -3,7 +3,7 @@
     %br
     %br
     %br
-    %h3 Loading Notes
+    %h1 Retrieving Notes
     %br
     %br
     %img(src="/assets/loading_2.gif")
@@ -27,12 +27,14 @@
 
     / note new view: loading
     .pagination-centered(ng-show="showNew && (notes.newLoading || notes.createLoading)")
-      %h3 Loading / Creating New Note
+      %h3 Retrieving / Creating New Note
       %img(src="/assets/loading_1.gif" width="80" height="80")
+
     / note new view
     %div(ng-show="showNew && !notes.newLoading && !notes.createLoading")
       %br
       %table.table
+
         / note new view: error
         %tr(ng-show="notes.createError")
           %td
@@ -40,6 +42,7 @@
               %ul(ng-repeat="(field, errors) in notes.createError")
                 %li(ng-repeat="error in errors")
                   {{ field }} {{ error }}
+
         / note new view: form
         %tr
           %td(colspan = "2")
@@ -63,7 +66,7 @@
                 .controls
                   %button.btn.btn-danger(ng-click="showNew = false")
                     cancel
-                  %button.btn.btn-success(ng-click="notes.callCreate()")
+                  %button.btn.btn-success(ng-click="notes.callCreate(function(){scope.showNew = false;})")
                     save
     %hr
     %table.table.table-striped
@@ -75,6 +78,7 @@
           %th(width="10%")
             Actions
       %tbody(ng-repeat="note in notes.index | filter:search")
+
         / note index view
         %tr(ng-hide="showEdit && notes.id == note._id")
           %td(ng-click = "notes.clearId()")
@@ -99,6 +103,7 @@
             .pagination-centered
               %h3 Loading Note
               %img(src="/assets/loading_1.gif" width="80" height="80")
+
         / note show view
         %tr(ng-show="notes.id && notes.id == note._id && !showEdit")
           %td
@@ -112,14 +117,16 @@
               %ul(ng-repeat="(field, errors) in notes.updateError")
                 %li(ng-repeat="error in errors")
                   {{ field }} {{ error }}
+
         / note edit view: loading
-        %tr(ng-show="showEdit && notes.id == note._id && notes.editLoading")
+        %tr(ng-show="showEdit && notes.id == note._id && (notes.editLoading || notes.updateLoading)")
           %td(colspan="4")
             .pagination-centered
-              %h3 Loading / Saving Note
+              %h3 Retrieving / Saving Note
               %img(src="/assets/loading_1.gif" width="80" height="80")
+
         / note edit view
-        %tr(ng-show="showEdit && notes.id == note._id && !notes.editLoading")
+        %tr(ng-show="showEdit && notes.id == note._id && !notes.editLoading && !notes.updateLoading")
           %td(colspan="4")
             %form.form-horizontal
               .control-group

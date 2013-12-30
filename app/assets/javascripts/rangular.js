@@ -63,36 +63,82 @@ rangular.directive('raController', [
       scope[rctrl].query = attrs.raQuery === void 0 ? {} : eval('(' + attrs.raQuery + ')');
       scope[rctrl].query.controller = rctrl;
 
-      scope[rctrl].callIndex = function(query) {
-        scope[rctrl].indexLoading = true;
-        if (query == null) {
-          query = scope[rctrl].query;
+      // [query], [success, [failure]]
+      processArgs = function() {
+        rargs = ({query:null, success:null, failure:null});
+        args = arguments[0]
+
+        if (args[0]  !== undefined) {
+          if (Object.prototype.toString.call(args[0]) == "[object Function]") {
+            rargs.success = args[0];
+          } else {
+            rargs.query = args[0];
+          }
+          if (args[1]  !== undefined) {
+            if (Object.prototype.toString.call(args[1]) == "[object Function]") {
+              if (!!rargs.success) {
+                rargs.failure = args[1];
+              } else {
+                rargs.success = args[1];
+              }
+            }
+            if (args[2]  !== undefined) {
+              if (Object.prototype.toString.call(args[2]) == "[object Function]") {
+                if (!!!rargs.failure) {
+                  rargs.failure = args[2];
+                }
+              }
+            }
+          }
         }
-        query.id = null;
-        scope[rctrl].index = railsResource.index(query, function() {
+        return rargs;
+      };
+
+      scope[rctrl].callIndex = function() {
+        scope.indexRargs = processArgs(arguments);
+
+        scope[rctrl].indexLoading = true;
+        if (scope.indexRargs.query == null) {
+          scope.indexRargs.query = scope[rctrl].query;
+        }
+        scope.indexRargs.query.id = null;
+        scope[rctrl].index = railsResource.index(scope.indexRargs.query, function() {
           scope[rctrl].indexLoading = false;
           scope.$broadcast(rctrl + '.index ready');
+          if(scope.indexRargs.success) {
+            scope.indexRargs.success();
+          }
+          scope.indexRargs = null;
         }, function() {
           scope[rctrl].indexLoading = false;
+          if(scope.indexRargs.failure) {
+            scope.indexRargs.failure();
+          }
+          scope.indexRargs = null;
         });
       };
 
-      callShowAndEdit = function(query) {
-        if (query == null) {
-          query = scope[rctrl].query;
+      callShowAndEdit = function() {
+        rargs = processArgs(arguments);
+
+        if (rargs.query == null) {
+          rargs.query = scope[rctrl].query;
         }
-        scope[rctrl].callShow(query);
-        scope[rctrl].callEdit(query);
+        scope[rctrl].callShow(rargs.query);
+        scope[rctrl].callEdit(rargs.query);
       };
 
-      scope[rctrl].callShow = function(query) {
-        if (query == null) {
-          query = scope[rctrl].query;
+
+      scope[rctrl].callShow = function() {
+        scope.showRargs = processArgs(arguments);
+
+        if (scope.showRargs.query == null) {
+          scope.showRargs.query = scope[rctrl].query;
         }
         if (!!scope[rctrl].id) {
           scope[rctrl].showLoading = true;
-          query.id = scope[rctrl].id;
-          scope[rctrl].show = railsResource.show(query, function() {
+          scope.showRargs.query.id = scope[rctrl].id;
+          scope[rctrl].show = railsResource.show(scope.showRargs.query, function() {
             scope[rctrl].showLoading = false;
             scope.$broadcast(rctrl + '.show ready');
           }, function() {
@@ -104,15 +150,17 @@ rangular.directive('raController', [
         }
       };
 
-      scope[rctrl].callNew = function(query) {
+      scope[rctrl].callNew = function() {
+        scope.newRargs = processArgs(arguments);
+
         scope[rctrl].newLoading = true;
-        if (query == null) {
-          query = scope[rctrl].query;
+        if (scope.newRargs.query == null) {
+          scope.newRargs.query = scope[rctrl].query;
         }
-        if (!!!query.controller) {
-          query.controller = rctrl;
+        if (!!!scope.newRargs.query.controller) {
+          scope.newRargs.query.controller = rctrl;
         }
-        scope[rctrl]["new"] = railsResource["new"](query, function() {
+        scope[rctrl]["new"] = railsResource["new"](scope.newRargs.query, function() {
           scope[rctrl].createError = null;
           scope[rctrl].newLoading = false;
           scope.$broadcast(rctrl + '.new ready');
@@ -121,17 +169,19 @@ rangular.directive('raController', [
         });
       };
 
-      scope[rctrl].callEdit = function(query) {
-        if (query == null) {
-          query = scope[rctrl].query;
+      scope[rctrl].callEdit = function() {
+        scope.editRargs = processArgs(arguments);
+
+        if (scope.editRargs.query == null) {
+          scope.editRargs.query = scope[rctrl].query;
         }
-        if (!!!query.controller) {
-          query.controller = rctrl;
+        if (!!!scope.editRargs.query.controller) {
+          scope.editRargs.query.controller = rctrl;
         }
         if (!!scope[rctrl].id) {
           scope[rctrl].editLoading = true;
-          query.id = scope[rctrl].id;
-          scope[rctrl].edit = railsResource.edit(query, function() {
+          scope.editRargs.query.id = scope[rctrl].id;
+          scope[rctrl].edit = railsResource.edit(scope.editRargs.query, function() {
             scope[rctrl].updateError = null;
             scope[rctrl].editLoading = false;
             scope.$broadcast(rctrl + '.edit ready');
@@ -144,12 +194,14 @@ rangular.directive('raController', [
         }
       };
 
-      scope[rctrl].callCreate = function(query) {
+      scope[rctrl].callCreate = function() {
+        scope.createRargs = processArgs(arguments);
+
         scope[rctrl].createLoading = true;
-        if (query == null) {
-          query = scope[rctrl].query;
+        if (scope.createRargs.query == null) {
+          scope.createRargs.query = scope[rctrl].query;
         }
-        scope[rctrl]["new"].$create(query, function() {
+        scope[rctrl]["new"].$create(scope.createRargs.query, function() {
           scope[rctrl].callNew();
           scope[rctrl].callIndex();
           scope[rctrl].createError = null;
@@ -163,14 +215,16 @@ rangular.directive('raController', [
         });
       };
 
-      scope[rctrl].callUpdate = function(query) {
+      scope[rctrl].callUpdate = function() {
+        scope.updateRargs = processArgs(arguments);
+
         scope[rctrl].updateLoading = true;
-        if (query == null) {
-          query = scope[rctrl].query;
+        if (scope.updateRargs.query == null) {
+          scope.updateRargs.query = scope[rctrl].query;
         }
-        scope[rctrl]["edit"].$update(query, function() {
-          scope[rctrl].callIndex();
+        scope[rctrl]["edit"].$update(scope.updateRargs.query, function() {
           scope[rctrl].updateError = null;
+          scope[rctrl].callIndex();
           scope[rctrl].updateLoading = false;
           scope.$broadcast(rctrl + '.update success');
         }, function(object) {

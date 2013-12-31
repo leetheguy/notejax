@@ -2,8 +2,8 @@ class NotesController < ApplicationController
   respond_to :json, except: :index
 
   #TODO make sure delays are in place
-  def delay_1() sleep(0) end
-  def delay_2() sleep(0) end
+  def delay_1() sleep(3) end
+  def delay_2() sleep(1) end
 
   def index
     @notes = Note.all

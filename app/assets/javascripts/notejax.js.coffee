@@ -1,1 +1,1 @@
-angular.module("Notejax", ['rangular'])
+njApp = angular.module("notejax", ["rangular"])

@@ -103,18 +103,19 @@ rangular.directive('raController', [
         }
         scope.indexRargs.query.id = null;
         scope[rctrl].index = railsResource.index(scope.indexRargs.query, function() {
-          scope[rctrl].indexLoading = false;
           scope.$broadcast(rctrl + '.index ready');
           if(scope.indexRargs.success) {
             scope.indexRargs.success();
           }
           scope.indexRargs = null;
-        }, function() {
           scope[rctrl].indexLoading = false;
+        }, function() {
+          scope.$broadcast(rctrl + '.index error');
           if(scope.indexRargs.failure) {
             scope.indexRargs.failure();
           }
           scope.indexRargs = null;
+          scope[rctrl].indexLoading = false;
         });
       };
 
@@ -136,7 +137,6 @@ rangular.directive('raController', [
           scope.showRargs.query = scope[rctrl].query;
         }
         if (!!scope[rctrl].id) {
-          scope[rctrl].showLoading = true;
           scope.showRargs.query.id = scope[rctrl].id;
           scope[rctrl].show = railsResource.show(scope.showRargs.query, function() {
             scope[rctrl].showLoading = false;
@@ -144,9 +144,13 @@ rangular.directive('raController', [
           }, function() {
             scope[rctrl].showLoading = false;
           });
+          scope.showRargs = null;
+          scope[rctrl].showLoading = true;
         } else {
-          scope[rctrl].showLoading = false;
           scope[rctrl].show = null;
+          scope.$broadcast(rctrl + '.show error');
+          scope.showRargs = null;
+          scope[rctrl].showLoading = false;
         }
       };
 
@@ -162,9 +166,12 @@ rangular.directive('raController', [
         }
         scope[rctrl]["new"] = railsResource["new"](scope.newRargs.query, function() {
           scope[rctrl].createError = null;
-          scope[rctrl].newLoading = false;
           scope.$broadcast(rctrl + '.new ready');
+          scope.newRargs = null;
+          scope[rctrl].newLoading = false;
         }, function() {
+          scope.$broadcast(rctrl + '.new error');
+          scope.newRargs = null;
           scope[rctrl].newLoading = false;
         });
       };
@@ -186,11 +193,13 @@ rangular.directive('raController', [
             scope[rctrl].editLoading = false;
             scope.$broadcast(rctrl + '.edit ready');
           }, function() {
-            scope.$broadcast(rctrl + '.edit ready');
+            scope.$broadcast(rctrl + '.edit error');
           });
+          scope.editRargs = null;
         } else {
           scope[rctrl].editLoading = false;
           scope[rctrl].edit = null;
+          scope.editRargs = null;
         }
       };
 
@@ -205,13 +214,16 @@ rangular.directive('raController', [
           scope[rctrl].callNew();
           scope[rctrl].callIndex();
           scope[rctrl].createError = null;
-          scope[rctrl].createLoading = false;
           scope.$broadcast(rctrl + '.create success');
-        }, function(object) {
+          scope.createRargs = null;
           scope[rctrl].createLoading = false;
+        }, function(object) {
           if (object.data) {
             scope[rctrl].createError = object.data;
           }
+          scope.$broadcast(rctrl + '.create failure');
+          scope.createRargs = null;
+          scope[rctrl].createLoading = false;
         });
       };
 
@@ -225,13 +237,16 @@ rangular.directive('raController', [
         scope[rctrl]["edit"].$update(scope.updateRargs.query, function() {
           scope[rctrl].updateError = null;
           scope[rctrl].callIndex();
-          scope[rctrl].updateLoading = false;
           scope.$broadcast(rctrl + '.update success');
-        }, function(object) {
+          scope.updateRargs = null;
           scope[rctrl].updateLoading = false;
+        }, function(object) {
           if (object.data) {
             scope[rctrl].updateError = object.data;
           }
+          scope.$broadcast(rctrl + '.update failure');
+          scope.updateRargs = null;
+          scope[rctrl].updateLoading = false;
         });
       };
 
@@ -245,9 +260,11 @@ rangular.directive('raController', [
         }
         railsResource["delete"](query, function() {
           scope[rctrl].callIndex();
-          scope[rctrl].deleteLoading = false;
           scope.$broadcast(rctrl + '.delete success');
+          scope.updateRargs = null;
+          scope[rctrl].deleteLoading = false;
         }, function() {
+          scope.$broadcast(rctrl + '.delete failure');
           scope[rctrl].deleteLoading = false;
         });
       };

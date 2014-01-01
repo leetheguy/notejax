@@ -13,9 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
-//= require angular.min
+//= require angular
 //= require angular-resource
-// require angle-up
-// require_tree ./angular
-// notejax
-// rangular
+//= require rangular
+//= require notejax
